@@ -8,9 +8,13 @@ from keras.models import load_model
 # this is for normalization
 def prep_pixels(x):
     # convertir integers to floats
-    for elem in x:
+    for i, elem in enumerate(x):
         elem = elem.astype('float32')
         elem = elem / 255.0
+        x[i] = elem
+
+    
+    return x
 
 def classification(name):
     if (name == "no"):
@@ -33,7 +37,7 @@ def load_data(folder_name):
     arrayOfIndex = [classification(x.split(os.sep)[-1].split("_")[0]) for x in arrayOfPaths]
     arrayOfTags = []
     for value in arrayOfIndex:
-        zeroArray = np.zeros(13, dtype=int)
+        zeroArray = np.zeros(2, dtype=int)
         zeroArray[value] = 1
         arrayOfTags.append(zeroArray)
     return np.array(arrayOfImages), np.array(arrayOfTags)

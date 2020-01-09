@@ -10,7 +10,11 @@ from keras.optimizers import SGD
 from keras.models import load_model
 import seaborn as sns
 import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 import sys
+import random
+random.seed(0)
+
 
 def prototype_model():
     model = Sequential()
@@ -40,7 +44,7 @@ def prototype_model():
     model.add(Dropout(0.5))
     model.add(Dense(32, activation='relu', kernel_initializer='he_uniform'))
     model.add(BatchNormalization())
-    model.add(Dense(13, activation='softmax'))
+    model.add(Dense(2, activation='softmax'))
     # compile model
     opt = SGD(lr=0.001, momentum=0.9)
     model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
@@ -57,10 +61,22 @@ def model(folder_train, folder_validation, folder_test):
     X_train,Y_train = load_data(folder_train) #this not resize the input
     X_validation,Y_validation = load_data(folder_validation)
     X_test, Y_test = load_data(folder_test)
-    prep_pixels(X_train)
-    prep_pixels(X_validation)
-    prep_pixels(X_test)
+    X_train = prep_pixels(X_train)
+    X_validation = prep_pixels(X_validation)
+    X_test = prep_pixels(X_test)
     
+    fig = plt.figure(figsize=(5,5))
+    for i in range(6):
+        #plt.show(X_train[i])
+        #input()
+        ax = fig.add_subplot(1, 6, i+1, xticks=[], yticks=[])
+        ax.imshow(X_train[i])
+        ax.set_title(str(Y_train[i]))
+    plt.show()
+    fig = plt.figure(figsize = (6,6))
+    ax = fig.add_subplot(111)
+    visualize_input(X_train[2], ax)
+    plt.show()
     model = prototype_model()
     steps = int(X_train.shape[0] / 64)
     # steps = 1
@@ -108,6 +124,21 @@ def model(folder_train, folder_validation, folder_test):
     print("\n%s: %.2f%%" % (model.metrics_names[1], scoresTest[1]*100))
     # guardar el model
     model.save('final_model.h5')
+
+def visualize_input(img, ax):
+    ax.imshow(img, cmap='gray')
+    print(img.shape)
+    width, height, deep = img.shape
+    thresh = img.max()/2.5
+    for x in range(width):
+        for y in range(height):
+            for z in range(deep):
+                ax.annotate(str(round(img[x][y][z],2)), xy=(y,x),
+                            horizontalalignment='center',
+                            verticalalignment='center',
+                            color='white' if img[x][y][z]<thresh else 'black')
+
+
 
 if __name__ == "__main__":
     folder_train = sys.argv[1]
