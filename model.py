@@ -79,6 +79,8 @@ def model(folder_train, folder_validation, folder_test):
     plt.show()
     model = prototype_model()
     steps = int(X_train.shape[0] / 64)
+    print  (model.summary())
+    input()
     # steps = 1
     model.fit(x=X_train, y=Y_train, steps_per_epoch=steps, epochs=200, validation_data=(X_validation, Y_validation), validation_steps=20, verbose=1)
     """history = model.fit(x=X_train, y=Y_train, steps_per_epoch=steps, epochs=200, validation_data=(X_validation, Y_validation), validation_steps=20, verbose=1)

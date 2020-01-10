@@ -2,6 +2,8 @@ from PIL import Image
 import os
 import glob
 import sys
+import matplotlib.pyplot as plt
+#from keras.preprocessing.image import img_to_array
 
 def resize(folder_name):
     currentPath = os.getcwd()
@@ -10,12 +12,11 @@ def resize(folder_name):
     print(arrayOfPaths)
     for path in arrayOfPaths:
         name = path.split(os.sep)[-1].split(".")[0] + "_128_72.jpeg"
-        print(name)
         im = Image.open(path)
-        print(name)
+        #a = img_to_array(im)
         im = im.resize((128,72), Image.ANTIALIAS)
-        print(name)
-        im.save(f"{currentPath}{os.sep}data{os.sep}validation_image_resized{os.sep}{name}")
+        #a = img_to_array(im)
+        im.save(f"{currentPath}{os.sep}data{os.sep}train_image_resized{os.sep}{name}")
         print(path)
    
 if __name__ == "__main__":
