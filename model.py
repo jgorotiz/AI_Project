@@ -53,7 +53,7 @@ def prototype_model():
 def test_model(pathModel,folder_test):
     model = load_model(pathModel)
     X_test, Y_test = load_data(folder_test)
-    prep_pixels(X_test)
+    X_test = prep_pixels(X_test)
     scoresTest = model.evaluate(X_test, Y_test)
     print("\n%s: %.2f%%" % (model.metrics_names[1], scoresTest[1]*100))
 
@@ -73,16 +73,13 @@ def model(folder_train, folder_validation, folder_test):
         ax.imshow(X_train[i])
         ax.set_title(str(Y_train[i]))
     plt.show()
-    fig = plt.figure(figsize = (6,6))
-    ax = fig.add_subplot(111)
-    visualize_input(X_train[2], ax)
-    plt.show()
+    
     model = prototype_model()
     steps = int(X_train.shape[0] / 64)
     print  (model.summary())
     input()
     # steps = 1
-    model.fit(x=X_train, y=Y_train, steps_per_epoch=steps, epochs=200, validation_data=(X_validation, Y_validation), validation_steps=20, verbose=1)
+    model.fit(x=X_train, y=Y_train, steps_per_epoch=steps, epochs=100, validation_data=(X_validation, Y_validation), validation_steps=20, verbose=1)
     """history = model.fit(x=X_train, y=Y_train, steps_per_epoch=steps, epochs=200, validation_data=(X_validation, Y_validation), validation_steps=20, verbose=1)
     plt.plot(history.history['loss'])
     plt.xlabel('Steps')
@@ -127,25 +124,26 @@ def model(folder_train, folder_validation, folder_test):
     # guardar el model
     model.save('final_model.h5')
 
-def visualize_input(img, ax):
-    ax.imshow(img, cmap='gray')
-    print(img.shape)
-    width, height, deep = img.shape
-    thresh = img.max()/2.5
-    for x in range(width):
-        for y in range(height):
-            for z in range(deep):
-                ax.annotate(str(round(img[x][y][z],2)), xy=(y,x),
-                            horizontalalignment='center',
-                            verticalalignment='center',
-                            color='white' if img[x][y][z]<thresh else 'black')
 
 
 
 if __name__ == "__main__":
-    folder_train = sys.argv[1]
-    folder_validation = sys.argv[2]
-    folder_test = sys.argv[3]
-    model(folder_train, folder_validation, folder_test)
-    #test_model('final_model.h5',folder_test )
+    print(len(sys.argv))
+    if len(sys.argv) < 4:
+        print("Faltan argumentos")
+        print("Existen dos maneras de usar el modelo (1 para entrenar, 2 para cargar un modelo ya existente)")
+        print("\t1. python model.py <NOMBRE DE LA CARPETA DE ENTRENAMIENTO> <NOMBRE DE LA CARPETA DE VALIDACION> <NOMBRE DE LA CARPETA DE PRUEBA>")
+        print("\t2. python model.py test <NOMBRE DEL ARCHIVO .h5> <NOMBRE DE LA CARPETA DE PRUEBA>")
+    else:
+        if sys.argv[1].lower() == "test":
+            print(sys.argv[2], sys.argv[3])
+            input()
+            test_model(sys.argv[2], sys.argv[3])
+        else:
+            folder_train = sys.argv[1]
+            folder_validation = sys.argv[2]
+            folder_test = sys.argv[3]
+            model(folder_train, folder_validation, folder_test)
+            #test_model('final_model.h5',folder_test )
     
+
